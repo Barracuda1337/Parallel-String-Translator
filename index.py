@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 import multiprocessing
 import shutil
+import psutil
 
 def detect_encoding(file_path):
     with open(file_path, 'rb') as file:
@@ -39,6 +40,22 @@ def load_progress(output_dir, part_num):
         with open(progress_file, 'r') as f:
             return json.load(f)
     return None
+
+def get_optimal_process_count():
+    # CPU çekirdek sayısını al
+    cpu_count = psutil.cpu_count(logical=False)  # Fiziksel çekirdek sayısı
+    
+    # Sistem belleğini kontrol et (GB cinsinden)
+    available_memory = psutil.virtual_memory().available / (1024 * 1024 * 1024)
+    
+    # Her işlem için minimum 500MB bellek gerektiğini varsayalım
+    max_processes_by_memory = int(available_memory / 0.5)
+    
+    # CPU ve bellek durumuna göre optimum işlem sayısını belirle
+    optimal_count = min(cpu_count, max_processes_by_memory)
+    
+    # En az 1, en fazla 32 işlem olsun
+    return max(1, min(optimal_count, 32))
 
 def process_file(input_file, output_file, start_line, end_line, part_num, file_encoding, output_dir):
     translator = GoogleTranslator(source='de', target='tr')
@@ -102,7 +119,9 @@ def main():
     input_file = "strings_german.str"
     output_dir = "translation_parts"
     final_output = "translated_output_final.str"
-    max_processes = 50  # Aynı anda işlenecek parça sayısını 16'ya çıkardım
+    
+    # Sistem kaynaklarına göre optimum işlem sayısını belirle
+    max_processes = get_optimal_process_count()
     
     # Çıktı klasörünü oluştur (varsa korur)
     if not os.path.exists(output_dir):
@@ -112,6 +131,13 @@ def main():
     file_encoding = detect_encoding(input_file)
     print(f"Tespit edilen dosya kodlaması: {file_encoding}")
     
+    # Sistem bilgilerini göster
+    print(f"\nSistem Bilgileri:")
+    print(f"CPU Çekirdek Sayısı: {psutil.cpu_count(logical=False)} (Fiziksel)")
+    print(f"Toplam Bellek: {psutil.virtual_memory().total / (1024**3):.1f} GB")
+    print(f"Kullanılabilir Bellek: {psutil.virtual_memory().available / (1024**3):.1f} GB")
+    print(f"Seçilen Paralel İşlem Sayısı: {max_processes}")
+    
     # Toplam satır sayısını bul
     with open(input_file, 'r', encoding=file_encoding) as f:
         total_lines = sum(1 for _ in f)
@@ -120,8 +146,9 @@ def main():
     lines_per_part = math.ceil(total_lines / 100)  # 100 parça
     num_parts = math.ceil(total_lines / lines_per_part)
     
-    print(f"Toplam {total_lines} satır")
-    print(f"Her parça yaklaşık {lines_per_part} satır içerecek")
+    print(f"\nÇeviri Bilgileri:")
+    print(f"Toplam {total_lines:,} satır")
+    print(f"Her parça yaklaşık {lines_per_part:,} satır içerecek")
     print(f"Toplam {num_parts} parça oluşturulacak")
     print(f"Aynı anda {max_processes} parça işlenecek")
     
@@ -164,7 +191,8 @@ def main():
     total_duration = (datetime.now() - start_time).total_seconds()
     print(f"\n✨ İşlem tamamlandı!")
     print(f"Toplam süre: {total_duration/60:.1f} dakika")
+    print(f"Ortalama hız: {total_lines/total_duration:.1f} satır/saniye")
     print(f"Sonuç dosyası: {final_output}")
 
 if __name__ == '__main__':
-    main()
+    main() 
