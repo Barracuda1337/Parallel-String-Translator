@@ -192,8 +192,8 @@ def main():
     create_directory_structure()
     
     # Ayarlar
-    input_file = "strings_german.str"
-    final_output = "translated_output_final.str"
+    input_file = "strings_kaynak.str"
+    final_output = "strings_final.str"
     
     # Sistem kaynaklarına göre optimum işlem sayısını belirle
     max_processes = get_optimal_process_count()
