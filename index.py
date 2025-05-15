@@ -147,7 +147,7 @@ def process_file(input_file, part_num, start_line, end_line, file_encoding):
         
         for i, line in enumerate(lines_to_process[start_idx:], start=start_idx):
             if i % 10 == 0:
-                progress = (i/total*100)
+                progress = ((i - start_idx) / total * 100)
                 remaining_limit = stats.get_remaining_limit()
                 print(f"Parça {part_num}: {progress:.1f}% tamamlandı (Kalan limit: {remaining_limit:,})")
                 
