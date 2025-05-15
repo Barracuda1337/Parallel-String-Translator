@@ -217,8 +217,16 @@ def main():
     print(f"Kalan: {remaining_limit:,} karakter")
     
     # Toplam satır sayısını bul
+    total_chars = 0
     with open(input_file, 'r', encoding=file_encoding) as f:
-        total_lines = sum(1 for _ in f)
+        lines = f.readlines()
+        total_lines = len(lines)
+        # Sadece çevrilecek metinlerin karakter sayısını hesapla
+        for line in lines:
+            match = re.match(r'(\S+)\s+"(.+)"', line.strip())
+            if match:
+                _, value = match.groups()
+                total_chars += len(value)
     
     # Her parçada olacak satır sayısını hesapla
     lines_per_part = math.ceil(total_lines / 100)  # 100 parça
@@ -227,6 +235,11 @@ def main():
     print(f"\n📝 Çeviri Bilgileri:")
     print(f"Dosya Kodlaması: {file_encoding}")
     print(f"Toplam {total_lines:,} satır")
+    print(f"Toplam çevrilecek karakter sayısı: {total_chars:,}")
+    print(f"Günlük limit: {DAILY_LIMIT:,} karakter")
+    if total_chars > DAILY_LIMIT:
+        print(f"⚠️ Uyarı: Dosya günlük limitten {total_chars - DAILY_LIMIT:,} karakter daha büyük!")
+        print(f"Çeviri birden fazla güne yayılacak.")
     print(f"Her parça yaklaşık {lines_per_part:,} satır içerecek")
     print(f"Toplam {num_parts} parça oluşturulacak")
     
