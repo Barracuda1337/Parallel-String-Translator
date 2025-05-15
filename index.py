@@ -227,10 +227,11 @@ def main():
             if match:
                 _, value = match.groups()
                 total_chars += len(value)
-    
-    # Her parçada olacak satır sayısını hesapla
-    lines_per_part = math.ceil(total_lines / 100)  # 100 parça
-    num_parts = math.ceil(total_lines / lines_per_part)
+                
+     # Her parçada olacak satır sayısını hesapla
+    cpu_count = psutil.cpu_count(logical=False)  # Fiziksel çekirdek sayısı
+    num_parts = cpu_count  # Çekirdek sayısı kadar parça
+    lines_per_part = math.ceil(total_lines / num_parts)
     
     print(f"\n📝 Çeviri Bilgileri:")
     print(f"Dosya Kodlaması: {file_encoding}")
