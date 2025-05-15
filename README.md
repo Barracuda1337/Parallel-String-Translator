@@ -51,7 +51,7 @@ ANOTHER_KEY "başka bir metin"
 
 ## ⚙️ Özelleştirme
 
-`py.py` dosyasında aşağıdaki ayarları değiştirebilirsiniz:
+`index.py` dosyasında aşağıdaki ayarları değiştirebilirsiniz:
 
 - `max_processes`: Aynı anda işlenecek parça sayısı
 - `lines_per_part`: Her parçadaki satır sayısı
