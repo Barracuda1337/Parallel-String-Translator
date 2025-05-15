@@ -66,7 +66,7 @@ ANOTHER_KEY "başka bir metin"
 
 ## 🔄 İş Akışı
 
-1. Dosya 100 parçaya bölünür
+1. Dosya işlemci sayısına göre parçaya bölünür
 2. Her parça ayrı bir işlemde çevrilir
 3. İlerleme bilgisi JSON dosyalarında saklanır
 4. Tamamlanan parçalar birleştirilir
